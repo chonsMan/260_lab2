@@ -5,7 +5,7 @@
 
 using namespace std;
 
-list::list() : head(NULL)
+LinkedList::LinkedList()
 {
 	head = NULL;
 	curr = NULL;
@@ -13,15 +13,19 @@ list::list() : head(NULL)
 }
 
 
-list::~list()
+LinkedList::~LinkedList()
 {
-
+	node * curr = head;
+	while(head){
+		curr = head->next;
+		delete head;
+		head = curr;
+	}
 }
 
-
-void list::add (char ch)
+void LinkedList::add (char ch)
 {
-	node_ptr newNode = new node; //node_ptr points to new node
+	node * newNode = new node; //node * points to new node
 	newNode->next = NULL; //find node newNode points to. Access its next element. Set it equal to NULL
 	newNode->data = ch; //Node holds data passed in
 	
@@ -30,19 +34,27 @@ void list::add (char ch)
 		while(curr->next != NULL && curr->data < ch) { //while not at last node in list
 			curr = curr->next;
 		}//while
-		curr->next - newNode;
+		newNode->next = curr->next;
+		curr->next = newNode;
 	}//if
 
 	else head = newNode;
 }//add
 
-bool list::del (char ch) {
-	node_ptr del_ptr = NULL;
-	temp = head;
+bool LinkedList::find(char ch){
+	while(curr != NULL){
+		if (curr->data == ch)
+			return true;
+		curr = curr->next;
+	}
+	return false;
+}
+
+bool LinkedList::del (char ch) {
+	node * del_ptr = NULL;
 	curr = head;
 
 	while(curr != NULL && curr->data != ch) {
-		temp = curr; //keep temp one step behind (prev)
 		curr = curr->next;
 	}//while
 
@@ -51,21 +63,24 @@ bool list::del (char ch) {
 		curr = curr->next; //get curr pointer out of here
 
 		//Need to connect temp and curr 
-		temp->next = curr; //list is patched
+		if (del_ptr == head) {
+			head = curr;
+		}
 		delete del_ptr;
 		return true;
 	}//if
 	else {
 		delete del_ptr;
+		del_ptr = NULL;
 		return false;
 	}//else
 }//del
 
 
-ostream& operator << (ostream& out, LinkedLisk list) {
-	alpha_numeric *p;
-	for(p = list.front; p!=0; p->next)
-		out << p->symbol;
+ostream& operator << (ostream& out, LinkedList& list) {
+	node * p;
+	for(p = list.head; p!=0; p = p->next)
+		out << p->data;
 	out<<endl;
 	return out;
 } 
